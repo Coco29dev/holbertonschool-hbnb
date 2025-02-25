@@ -1,4 +1,5 @@
 from models.BaseModel import BaseModel
+<<<<<<< Updated upstream
 from models.user import User
 from persistence.repository import InMemoryRepository
 
@@ -41,10 +42,29 @@ class Place(BaseModel):
                 "L'utilisateur spécifié comme propriétaire existe pas")
         self.owner = owner
 
+=======
+
+class Place(BaseModel):
+    def __init__(self, title, description, price, latitude, longitude, owner):
+        super().__init__()
+        self.title = title
+        self.description = description
+        self.price = price
+        self.latitude = latitude
+        self.longitude = longitude
+        self.owner = owner
+        self.reviews = []  # List to store related reviews
+        self.amenities = []  # List to store related amenities
+
+>>>>>>> Stashed changes
     def add_review(self, review):
         """Add a review to the place."""
         self.reviews.append(review)
 
     def add_amenity(self, amenity):
         """Add an amenity to the place."""
+<<<<<<< Updated upstream
         self.amenities.append(amenity)
+=======
+        self.amenities.append(amenity)
+>>>>>>> Stashed changes
