@@ -10,7 +10,6 @@ class User(BaseModel):
         self.last_name = last_name
         self.email = email
         self.is_admin = is_admin
-<<<<<<< Updated upstream
         self.validate_email(email)
         self.validate_name(first_name, last_name)
 
@@ -23,6 +22,3 @@ class User(BaseModel):
         if len(first_name) > 50 or len(last_name) > 50:
             raise ValueError(
                 "Le nom ou prénom ne doit pas dépasser 50 caractères.")
-=======
-
->>>>>>> Stashed changes
