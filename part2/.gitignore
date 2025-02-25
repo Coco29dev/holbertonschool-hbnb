@@ -15,5 +15,3 @@ dist/
 build/
 # Fichiers de cache
 .cache/
-# Fichier test
-tests
