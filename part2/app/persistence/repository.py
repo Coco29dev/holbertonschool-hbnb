@@ -43,7 +43,11 @@ class InMemoryRepository(Repository):
     def update(self, obj_id, data):
         obj = self.get(obj_id)
         if obj:
-            obj.update(data)
+            for key, value in data.items():  # Parcourt les nouvelles valeurs
+                setattr(obj, key, value)  # Met à jour l'objet
+            return obj  # Retourne l'objet mis à jour
+        return None  # Si l'objet n'existe pas
+
 
     def delete(self, obj_id):
         if obj_id in self._storage:
@@ -51,3 +55,7 @@ class InMemoryRepository(Repository):
 
     def get_by_attribute(self, attr_name, attr_value):
         return next((obj for obj in self._storage.values() if getattr(obj, attr_name) == attr_value), None)
+
+    def delete(self, obj_id):
+        if obj_id in self.storage:
+            del self.storage[obj_id]
