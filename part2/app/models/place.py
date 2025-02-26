@@ -14,7 +14,7 @@ class Place(BaseModel):
         self.number_rooms = number_rooms
         self.owner = None
         self.reviews = []  # List to store related reviews
-        self.amenities = []  # List to store related amenities
+        self.amenity = []  # List to store related amenities
 
         if not isinstance(title, str) or not (1 <= len(title) <= 100):
             raise ValueError(
