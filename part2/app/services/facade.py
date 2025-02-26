@@ -14,13 +14,13 @@ class HBnBFacade:
         user = User(**user_data)
         self.user_repo.add(user)
         return user
-    
+
     def get_user(self, user_id):
         return self.user_repo.get(user_id)
-    
+
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
-    
+
     def get_all_users(self):
         """Récupère la liste de tous les utilisateurs."""
         return self.user_repo.get_all()
@@ -46,7 +46,7 @@ class HBnBFacade:
             raise ValueError("L'utilisateur spécifié comme propriétaire existe pas")
         # créer nouvelle instance de Place
         place = Place(
-            title=place_data["title"],
+        title=place_data["title"],
         description=place_data["description"],
         price_per_night=place_data["price_per_night"],
         latitude=place_data["latitude"],
@@ -118,3 +118,27 @@ class HBnBFacade:
     def get_all_places(self):
         return self.place_repo.get_all()
     
+    def create_amenity(self, amenity_data):
+        if 'name' not in amenity_data:
+            raise ValueError("Missing 'name' field")
+
+        # Create a new amenity and save it
+        amenity = amenity(**amenity_data)
+        self.amenity_repo.add(amenity)
+        return amenity
+
+    def get_amenity(self, amenity_id):
+        return self.amenity_repo.get(amenity_id)
+
+    def get_all_amenities(self):
+        return self.amenity_repo.get_all() or []
+
+    def update_amenity(self, amenity_id, amenity_data):
+        amenity = self.amenity_repo.get(amenity_id)
+        if not amenity:
+            return None
+        for key, value in amenity_data.items():
+            setattr(amenity, key, value)
+        self.amenity_repo.update(amenity)
+        return amenity
+
