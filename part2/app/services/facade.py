@@ -2,6 +2,7 @@ from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.place import Place
 from app.models.review import Review 
+from app.models.amenity import Amenity
 
 class HBnBFacade:
     def __init__(self):
@@ -123,7 +124,7 @@ class HBnBFacade:
             raise ValueError("Missing 'name' field")
 
         # Create a new amenity and save it
-        amenity = amenity(**amenity_data)
+        amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
         return amenity
 
