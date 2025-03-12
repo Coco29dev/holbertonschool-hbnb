@@ -13,42 +13,39 @@ class HBnBFacade:
         self.amenity_repo = SQLAlchemyRepository(Amenity)
 
     def create_user(self, user_data):
-        # Crée un utilisateur avec un mot de passe haché
+        """Crée un utilisateur avec un mot de passe haché."""
         user = User(
             first_name=user_data['first_name'],
             last_name=user_data['last_name'],
             email=user_data['email'],
-            # On passe le mot de passe pour le hachage
-            password=user_data['password']
+            password=user_data['password']  # Hachage du mot de passe à ce niveau
         )
-        # Ajouter l'utilisateur à la base de données ou à la mémoire
         self.user_repo.add(user)
         return user
 
     def get_user(self, user_id):
+        """Récupère un utilisateur par ID."""
         return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
+        """Récupère un utilisateur par son email."""
         return self.user_repo.get_by_attribute('email', email)
 
     def get_all_users(self):
-        """Récupère la liste de tous les utilisateurs."""
-        return self.user_repo.get_all()
+        """Récupère tous les utilisateurs."""
+        return [user.to_dict() for user in self.user_repo.get_all()]
 
     def update_user(self, user_id, user_data):
         """Met à jour les informations d'un utilisateur."""
         user = self.user_repo.get(user_id)
         if not user:
-            return None  # Si l'utilisateur n'existe pas
+            return None
 
-        # Mettre à jour l'utilisateur avec les nouvelles données
-        # Utiliser la méthode d'update du repository
         self.user_repo.update(user_id, user_data)
-        # Retourner l'utilisateur mis à jour
         return self.user_repo.get(user_id)
 
     def create_place(self, place_data):
-        """Crée un lieu et retourne l'objet du lieu créé"""
+        """Crée un lieu et retourne l'objet du lieu créé."""
         owner_id = place_data.get('owner_id')
         amenities_ids = place_data.get('amenities', [])
 
@@ -65,84 +62,64 @@ class HBnBFacade:
         for amenity_id in amenities_ids:
             amenity = self.get_amenity(amenity_id)  # Récupérer l'objet Amenity
             if amenity:
-                # Si l'amenity existe, l'ajouter à la place
                 new_place.add_amenity(amenity)
 
         self.place_repo.add(new_place)
-        return new_place
+        return new_place.to_dict()  # Retourner un dict pour une API
 
     def get_place(self, place_id):
-        """Récupère un lieu par ID"""
+        """Récupère un lieu par ID."""
         return self.place_repo.get(place_id)
 
     def get_all_places(self):
-        """Récupère tous les lieux"""
-        return self.place_repo.get_all()
+        """Récupère tous les lieux."""
+        return [place.to_dict() for place in self.place_repo.get_all()]
 
     def update_place(self, place_id, place_data):
-        """Met à jour un lieu par ID"""
+        """Met à jour un lieu par ID."""
         place = self.get_place(place_id)
         if not place:
-            # Retourne une erreur si le lieu n'existe pas
             return {"error": "Place not found"}, 404
 
         # Vérification des amenities
         for amenity_id in place_data.get('amenities', []):
             amenity = self.get_amenity(amenity_id)
             if not amenity:
-                # Si un amenity n'est pas trouvé
                 return {"error": f"Amenity {amenity_id} not found"}, 404
-
-        # Vérification des reviews
-        for review_id in place_data.get('reviews', []):
-            review = self.get_review(review_id)
-            if not review:
-                # Si un avis n'est pas trouvé
-                return {"error": f"Review {review_id} not found"}, 404
 
         # Mise à jour du lieu
         self.place_repo.update(place_id, place_data)
-        return self.place_repo.get(place_id)
-
-    def get_place_with_amenities(self, place_id):
-        """Récupère un lieu avec ses amenities sous forme d'objets"""
-        place = self.get_place(place_id)
-        if not place:
-            return None  # Si le lieu n'existe pas, retourne None
-
-        # Récupérer les amenities associés au lieu
-        amenities = place.get_amenities(self.amenity_repo)
-        place_dict = place.to_dict()
-        place_dict["amenities"] = [amenity.to_dict() for amenity in amenities]
-
-        return place_dict
+        return self.place_repo.get(place_id).to_dict()
 
     def create_amenity(self, amenity_data):
+        """Crée un amenity."""
         if 'name' not in amenity_data:
             raise ValueError("Missing 'name' field")
 
-        # Create a new amenity and save it
         amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
-        return amenity
+        return amenity.to_dict()
 
     def get_amenity(self, amenity_id):
+        """Récupère un amenity par ID."""
         return self.amenity_repo.get(amenity_id)
 
     def get_all_amenities(self):
-        return self.amenity_repo.get_all() or []
+        """Récupère tous les amenities."""
+        return [amenity.to_dict() for amenity in self.amenity_repo.get_all()]
 
     def update_amenity(self, amenity_id, amenity_data):
+        """Met à jour un amenity."""
         amenity = self.amenity_repo.get(amenity_id)
         if not amenity:
             return None
         for key, value in amenity_data.items():
             setattr(amenity, key, value)
         self.amenity_repo.update(amenity_id, amenity_data)
-        return amenity
+        return amenity.to_dict()
 
     def create_review(self, review_data):
-        """Crée un avis après validation des données."""
+        """Crée un avis."""
         user = self.user_repo.get(review_data['user_id'])
         place = self.place_repo.get(review_data['place_id'])
 
@@ -153,7 +130,7 @@ class HBnBFacade:
         if not rating or rating < 1 or rating > 5:
             return None
 
-        # Crée l'objet Review au lieu de retourner un dictionnaire
+        # Crée l'objet Review
         review = Review(
             text=review_data["text"],
             rating=review_data["rating"],
@@ -162,40 +139,36 @@ class HBnBFacade:
         )
 
         self.review_repo.add(review)
-
-        # Retourne l'objet Review, pas un dictionnaire
-        return review
+        return review.to_dict()  # Retourne l'objet Review sous forme de dict
 
     def get_review(self, review_id):
-        """Récupère un avis par son ID."""
+        """Récupère un avis par ID."""
         return self.review_repo.get(review_id)
 
     def get_all_reviews(self):
         """Récupère tous les avis."""
-        return self.review_repo.get_all()
+        return [review.to_dict() for review in self.review_repo.get_all()]
 
     def get_reviews_by_place(self, place_id):
         """Récupère tous les avis pour un lieu spécifique."""
         reviews = self.review_repo.get_all()
-        # Filtre les avis pour ne garder que ceux liés au lieu spécifié
         return [review.to_dict() for review in reviews if review.place_id == place_id]
 
     def update_review(self, review_id, review_data):
-        """Met à jour un avis existant."""
+        """Met à jour un avis."""
         review = self.review_repo.get(review_id)
         if not review:
-            return None  # Si l'avis n'existe pas, retournera None
+            return None
 
-        # Mise à jour des données de l'avis
         for key, value in review_data.items():
             setattr(review, key, value)
         self.review_repo.update(review.id, review_data)
-        return review
+        return review.to_dict()
 
     def delete_review(self, review_id):
         """Supprime un avis."""
         review = self.review_repo.get(review_id)
         if not review:
-            return None  # Si l'avis n'existe pas, retournera None
+            return None
         self.review_repo.delete(review.id)
-        return review
+        return review.to_dict()
