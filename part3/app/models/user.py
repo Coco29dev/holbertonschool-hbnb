@@ -1,36 +1,42 @@
 #!/usr/bin/python3
 import re
 from app.models.BaseModel import BaseModel
+from app import db, bcrypt
 from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt()
 
 
 class User(BaseModel):
+    __tablename__ = 'users'  # Nom de la table dans la base de données
 
-    existing_emails = []
+    # Définition des colonnes de la table 'users'
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(128), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
 
     def __init__(self, first_name, last_name, email, password, is_admin=False):
-        super().__init__()
+        super().__init__()  # Appel du constructeur de BaseModel
+
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.is_admin = is_admin
-        self.password = None  # Initialize password as None
+
         self.validate_email(email)
         self.validate_name(first_name, last_name)
-        self.check_email_uniqueness(email)
-        User.existing_emails.append(email)
 
         if password:
-            self.hash_password(password)  # Hash the password if provided
+            self.hash_password(password)  # Hash le mot de passe avant de le stocker
 
     def hash_password(self, password):
-        """Hashes the password before storing it."""
+        """Hache le mot de passe avant de le stocker."""
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
-        """Verifies if the provided password matches the hashed password."""
+        """Vérifie si le mot de passe fourni correspond au mot de passe haché."""
         return bcrypt.check_password_hash(self.password, password)
 
     def validate_email(self, email):
@@ -45,14 +51,12 @@ class User(BaseModel):
             raise ValueError(
                 "Le nom ou prénom ne doit pas dépasser 50 caractères.")
 
-    def check_email_uniqueness(self, email):
-        if email in User.existing_emails:
-            raise ValueError(f"L'email {email} est déjà utilisé.")
-
     def to_dict(self):
+        """Convertit l'objet en un dictionnaire."""
         return {
             "id": self.id,
             "first_name": self.first_name,
             "last_name": self.last_name,
-            "email": self.email
+            "email": self.email,
+            "is_admin": self.is_admin
         }
