@@ -25,7 +25,7 @@ class HBnBFacade:
 
     def get_user_by_email(self, email):
         """Récupère un utilisateur par son email."""
-        return self.user_repo.get_by_attribute('email', email)
+        return self.user_repo.get_user_by_email(email)
 
     def get_all_users(self):
         """Récupère tous les utilisateurs."""
