@@ -19,8 +19,9 @@ class HBnBFacade:
             first_name=user_data['first_name'],
             last_name=user_data['last_name'],
             email=user_data['email'],
-            password=user_data['password']  # Hachage du mot de passe à ce niveau
+            password=user_data['password']  # Mot de passe brut ici
         )
+        user.hash_password(user_data['password'])  # Hachage du mot de passe avant d'enregistrer
         self.user_repo.add(user)
         return user
 
