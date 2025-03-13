@@ -14,14 +14,8 @@ class HBnBFacade:
         self.amenity_repo = SQLAlchemyRepository(Amenity)
 
     def create_user(self, user_data):
-        """Crée un utilisateur avec un mot de passe haché."""
-        user = User(
-            first_name=user_data['first_name'],
-            last_name=user_data['last_name'],
-            email=user_data['email'],
-            password=user_data['password']  # Mot de passe brut ici
-        )
-        user.hash_password(user_data['password'])  # Hachage du mot de passe avant d'enregistrer
+        user = User(**user_data)
+        user.hash_password(user_data['password'])
         self.user_repo.add(user)
         return user
 
