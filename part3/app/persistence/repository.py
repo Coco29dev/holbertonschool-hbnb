@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from app import db
 from app.models import User, Place, Review, Amenity
+from app.persistence.repository import SQLAlchemyRepository
 
 class Repository(ABC):
     @abstractmethod
@@ -57,3 +58,15 @@ class SQLAlchemyRepository(Repository):
 
     def get_by_attribute(self, attr_name, attr_value):
         return self.model.query.filter(getattr(self.model, attr_name) == attr_value).first()
+
+class UserRepository(SQLAlchemyRepository):
+    def __init__(self):
+        super().__init__(User)
+
+    def get_user_by_email(self, email):
+        """Récupère un utilisateur par son email."""
+        return self.model.query.filter_by(email=email).first()
+
+    def check_email_unique(self, email):
+        """Vérifie si un email est unique."""
+        return self.model.query.filter_by(email=email).first() is None
