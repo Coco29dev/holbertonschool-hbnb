@@ -1,17 +1,45 @@
-# Environnement virtuel
-.venv/
-# Fichiers Python compilés
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-# Fichiers de logs
-*.log
-# Fichiers de configuration d’éditeur
-.vscode/
-.idea/
-# Fichiers de dépendances téléchargées
-*.egg-info/
+*.so
+
+# Distribution / packaging
 dist/
 build/
-# Fichiers de cache
-.cache/
+*.egg-info/
+
+# Virtual Environment
+/venv
+.venv/
+env/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.local
+
+# Database
+*.db
+*.sqlite3
+
+# Flask
+instance/
+.webassets-cache
+
+# Logs
+*.log
+logs/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
