@@ -1,10 +1,16 @@
-/* 
-  This is a SAMPLE FILE to get you started.
-  Please, follow the project instructions to complete the tasks.
-*/
+/*
+
 document.addEventListener('DOMContentLoaded', () => {
+  // Vérifier si nous sommes sur la page d'ajout d'avis
+  const reviewForm = document.getElementById('review-form');
+  const placeDetailsElement = document.getElementById('place-details');
+
+  if (reviewForm && !placeDetailsElement) {
+    // Nous sommes sur la page add_review.html
+    initAddReviewPage();
+  }
   // Vérifier si nous sommes sur la page de détails d'une place
-  if (document.getElementById('place-details')) {
+  else if (placeDetailsElement) {
     initPlaceDetailsPage();
   } else {
     // Gérer le formulaire de connexion si présent
@@ -26,6 +32,114 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuthentication();
   }
 });
+
+// Initialisation de la page d'ajout d'avis
+function initAddReviewPage() {
+  // Vérifier l'authentification et rediriger si non authentifié
+  const token = getCookie('token');
+  if (!token) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // Mettre à jour le bouton de connexion
+  updateLoginButton(token);
+
+  // Récupérer l'ID de la place depuis l'URL
+  const params = getUrlParams();
+  const placeId = params.id;
+
+  if (!placeId) {
+    showError('Place ID is missing in the URL');
+    return;
+  }
+
+  // Récupérer les détails de la place pour afficher son titre
+  fetchPlaceForReview(placeId, token);
+
+  // Configurer le formulaire d'ajout d'avis
+  setupAddReviewForm(placeId, token);
+}
+
+// Récupérer les informations d'une place pour la page d'ajout de revue
+async function fetchPlaceForReview(placeId, token) {
+  try {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`http://localhost:5000/api/v1/places/${placeId}`, {
+      method: 'GET',
+      headers: headers
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const placeData = await response.json();
+
+    // Mettre à jour le titre de la page avec le nom de la place
+    const pageTitle = document.querySelector('main h2');
+    if (pageTitle) {
+      pageTitle.textContent = `Add a Review for ${placeData.title}`;
+    }
+
+  } catch (error) {
+    console.error('Error fetching place info:', error);
+    showError('Failed to load place information');
+  }
+}
+
+// Configuration du formulaire d'ajout d'avis sur la page add_review.html
+function setupAddReviewForm(placeId, token) {
+  const reviewForm = document.getElementById('review-form');
+  if (!reviewForm) return;
+
+  reviewForm.addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const reviewText = document.getElementById('review').value;
+    const rating = document.getElementById('rating').value;
+
+    if (!reviewText || !rating) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/v1/places/${placeId}/reviews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          text: reviewText,
+          rating: parseInt(rating)
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || errorData.message || 'Failed to submit review');
+      }
+
+      alert('Review submitted successfully!');
+
+      // Rediriger vers la page des détails de la place
+      window.location.href = `place.html?id=${placeId}`;
+
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert(error.message || 'Failed to submit review. Please try again.');
+    }
+  });
+}
 
 // Fonction pour extraire les paramètres de l'URL
 function getUrlParams() {
@@ -91,7 +205,7 @@ function updateLoginButton(token) {
     newLoginButton.addEventListener('click', function (e) {
       e.preventDefault();
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      window.location.reload();
+      window.location.href = 'index.html';  // Rediriger vers la page d'accueil après déconnexion
     });
   }
 }
@@ -177,12 +291,14 @@ function displayPlaceDetails(place) {
     }
 
     if (addReviewButton) {
+      // Mettre à jour le lien avec l'ID de la place
+      addReviewButton.href = `add_review.html?id=${place.id}`;
       reviewsSection.appendChild(addReviewButton);
     }
   }
 }
 
-// Configuration du formulaire d'ajout de revue
+// Configuration du formulaire d'ajout de revue sur la page des détails
 function setupReviewForm(placeId, token) {
   const reviewForm = document.getElementById('review-form');
   if (!reviewForm) return;
@@ -291,7 +407,7 @@ function checkAuthentication() {
     newLoginButton.addEventListener('click', function (e) {
       e.preventDefault();
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      window.location.reload();
+      window.location.href = 'index.html';
     });
 
     fetchPlaces(token);
@@ -397,3 +513,4 @@ function filterPlacesByPrice(maxPrice) {
   const filteredPlaces = places.filter(place => place.price <= maxPriceValue);
   displayPlaces(filteredPlaces);
 }
+*/
