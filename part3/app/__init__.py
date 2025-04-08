@@ -9,10 +9,12 @@ from app.api.v1.reviews import api as reviews_ns
 from app.api.v1.auth import api as auth_ns
 from app.api.v1.protected import api as protected_ns
 from app.extensions import db, jwt, bcrypt
+from flask_cors import CORS
 
 
 def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object(config_class)
     app.config['SECRET_KEY'] = 'your_secret_key'
     bcrypt.init_app(app)
