@@ -93,7 +93,7 @@ async function fetchPlaces(token) {
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    const response = await fetch('http://localhost:5000/api/v1/places', {
+    const response = await fetch('http://localhost:5000/api/v1/places/', {
       method: 'GET',
       headers: headers
     });
