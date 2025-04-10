@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restx import Api
-from config import DevelopmentConfig
+from config import Config
 from app.extensions import db, jwt, bcrypt
 from app.api.v1.users import api as users_ns
 from app.api.v1.amenities import api as amenities_ns
@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 
 
-def create_app(config_class=DevelopmentConfig):
+def create_app(config_class=Config):
     app = Flask(__name__)
     CORS(app)
     app.config.from_object(config_class)
