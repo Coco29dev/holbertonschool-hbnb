@@ -1,4 +1,4 @@
-// Fonctions utilitaires communes à toute l'application
+
 
 // Récupérer un cookie par son nom
 function getCookie(name) {

@@ -1,4 +1,4 @@
-// Fonctions liées à l'authentification
+
 import { getCookie } from './utils.js';
 
 // Fonction d'authentification
