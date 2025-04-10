@@ -1,8 +1,14 @@
-// Fonctions liées à l'ajout et affichage des revues
+/**
+ * Fonctions liées à l'ajout et à l'affichage des revues
+ */
 import { getCookie, getUrlParams, showError } from './utils.js';
 import { updateLoginButton } from './auth.js';
 
-// Configuration du formulaire d'ajout de revue sur la page des détails
+/**
+ * Configuration du formulaire d'ajout de revue sur la page des détails
+ * @param {string} placeId - ID de la place concernée
+ * @param {string} token - Token JWT pour l'authentification
+ */
 function setupReviewForm(placeId, token) {
   const reviewForm = document.getElementById('review-form');
   if (!reviewForm) return;
@@ -46,7 +52,9 @@ function setupReviewForm(placeId, token) {
   });
 }
 
-// Initialisation de la page d'ajout d'avis
+/**
+ * Initialisation de la page d'ajout d'avis
+ */
 function initAddReviewPage() {
   // Vérifier l'authentification et rediriger si non authentifié
   const token = getCookie('token');
@@ -74,7 +82,11 @@ function initAddReviewPage() {
   setupAddReviewForm(placeId, token);
 }
 
-// Récupérer les informations d'une place pour la page d'ajout de revue
+/**
+ * Récupère les informations basiques d'une place pour la page d'ajout de revue
+ * @param {string} placeId - ID de la place
+ * @param {string} token - Token JWT pour l'authentification
+ */
 async function fetchPlaceForReview(placeId, token) {
   try {
     const headers = {
@@ -108,7 +120,11 @@ async function fetchPlaceForReview(placeId, token) {
   }
 }
 
-// Configuration du formulaire d'ajout d'avis sur la page add_review.html
+/**
+ * Configuration du formulaire d'ajout d'avis sur la page add_review.html
+ * @param {string} placeId - ID de la place concernée
+ * @param {string} token - Token JWT pour l'authentification
+ */
 function setupAddReviewForm(placeId, token) {
   const reviewForm = document.getElementById('review-form');
   if (!reviewForm) return;

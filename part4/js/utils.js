@@ -1,6 +1,12 @@
+/**
+ * Fonctions utilitaires utilisées dans toute l'application
+ */
 
-
-// Récupérer un cookie par son nom
+/**
+ * Récupère un cookie par son nom
+ * @param {string} name - Nom du cookie à récupérer
+ * @return {string|null} - Valeur du cookie ou null si non trouvé
+ */
 function getCookie(name) {
   const cookies = document.cookie.split(';');
   for (let i = 0; i < cookies.length; i++) {
@@ -12,7 +18,10 @@ function getCookie(name) {
   return null;
 }
 
-// Extraire les paramètres de l'URL
+/**
+ * Extrait les paramètres de l'URL
+ * @return {Object} - Objet contenant les paramètres de l'URL
+ */
 function getUrlParams() {
   const params = {};
   const queryString = window.location.search.substring(1);
@@ -28,7 +37,10 @@ function getUrlParams() {
   return params;
 }
 
-// Afficher un message d'erreur
+/**
+ * Affiche un message d'erreur à l'utilisateur
+ * @param {string} message - Message d'erreur à afficher
+ */
 function showError(message) {
   const mainElement = document.querySelector('main');
   if (mainElement) {
@@ -38,5 +50,4 @@ function showError(message) {
   }
 }
 
-// Exporter les fonctions pour les rendre disponibles aux autres modules
 export { getCookie, getUrlParams, showError };

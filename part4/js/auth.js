@@ -1,42 +1,63 @@
 
+/**
+ * Fonctions liées à l'authentification
+ * Gestion du login, du token JWT et de l'état de connexion
+ */
 import { getCookie } from './utils.js';
 
-// Fonction d'authentification
+/**
+ * Authentifie un utilisateur auprès de l'API
+ * @param {string} email - Email de l'utilisateur
+ * @param {string} password - Mot de passe de l'utilisateur
+ */
 async function loginUser(email, password) {
-  const response = await fetch('http://localhost:5000/api/v1/auth/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ email, password })
-  });
+  try {
+    const response = await fetch('http://localhost:5000/api/v1/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
 
-  if (response.ok) {
-    const data = await response.json();
-    document.cookie = `token=${data.access_token}; path=/`;
-    window.location.href = 'index.html';
-  } else {
-    alert('Login failed: ' + response.statusText);
+    if (response.ok) {
+      const data = await response.json();
+      document.cookie = `token=${data.access_token}; path=/`;
+      window.location.href = 'index.html';
+    } else {
+      const errorData = await response.json();
+      alert('Login failed: ' + (errorData.message || response.statusText));
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('Login failed: Network error');
   }
 }
 
-// Mise à jour du bouton de connexion/déconnexion
+/**
+ * Met à jour l'affichage du bouton de connexion/déconnexion
+ * @param {string|null} token - Token JWT si l'utilisateur est connecté
+ */
 function updateLoginButton(token) {
   const loginButton = document.querySelector('.login-button');
   if (!loginButton) return;
 
   if (!token) {
+    // L'utilisateur n'est pas connecté
     loginButton.textContent = 'Login';
     loginButton.href = 'login.html';
-    loginButton.replaceWith(loginButton.cloneNode(true));
+    const newButton = loginButton.cloneNode(true);
+    loginButton.replaceWith(newButton);
   } else {
+    // L'utilisateur est connecté
     loginButton.textContent = 'Logout';
     loginButton.href = '#';
 
-    const newLoginButton = loginButton.cloneNode(true);
-    loginButton.parentNode.replaceChild(newLoginButton, loginButton);
+    const newButton = loginButton.cloneNode(true);
+    loginButton.parentNode.replaceChild(newButton, loginButton);
 
-    newLoginButton.addEventListener('click', function (e) {
+    // Ajouter l'événement de déconnexion
+    newButton.addEventListener('click', function (e) {
       e.preventDefault();
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       window.location.href = 'index.html';
@@ -44,7 +65,9 @@ function updateLoginButton(token) {
   }
 }
 
-// Initialisation du formulaire de connexion
+/**
+ * Initialise le formulaire de connexion avec les écouteurs d'événements
+ */
 function initLoginForm() {
   const loginForm = document.getElementById('login-form');
   if (loginForm) {

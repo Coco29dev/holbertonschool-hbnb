@@ -1,9 +1,13 @@
-// Fonctions liées à la vue détaillée d'une place
+/**
+ * Fonctions liées à l'affichage des détails d'une place
+ */
 import { getCookie, getUrlParams, showError } from './utils.js';
 import { updateLoginButton } from './auth.js';
 import { setupReviewForm } from './reviews.js';
 
-// Initialisation de la page des détails
+/**
+ * Initialise la page de détails d'une place
+ */
 function initPlaceDetailsPage() {
   const token = getCookie('token');
   const params = getUrlParams();
@@ -14,31 +18,38 @@ function initPlaceDetailsPage() {
     return;
   }
 
-  // Mise à jour du bouton login/logout
+  // Mettre à jour le bouton login/logout
   updateLoginButton(token);
 
   // Gestion de l'affichage du formulaire d'ajout de revue
   const addReviewSection = document.getElementById('add-review');
   if (addReviewSection) {
     if (!token) {
+      // Masquer le formulaire si l'utilisateur n'est pas connecté
       addReviewSection.style.display = 'none';
     } else {
+      // Afficher le formulaire et l'initialiser
       addReviewSection.style.display = 'block';
       setupReviewForm(placeId, token);
     }
   }
 
-  // Récupération des détails de la place
+  // Récupérer et afficher les détails de la place
   fetchPlaceDetails(placeId, token);
 }
 
-// Récupération des détails d'une place depuis l'API
+/**
+ * Récupère les détails d'une place depuis l'API
+ * @param {string} placeId - ID de la place à récupérer
+ * @param {string|null} token - Token JWT pour l'authentification (optionnel)
+ */
 async function fetchPlaceDetails(placeId, token) {
   try {
     const headers = {
       'Content-Type': 'application/json'
     };
 
+    // Ajouter le token d'authentification si disponible
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
@@ -61,7 +72,10 @@ async function fetchPlaceDetails(placeId, token) {
   }
 }
 
-// Affichage des détails de la place
+/**
+ * Affiche les détails d'une place dans l'interface
+ * @param {Object} place - Données de la place à afficher
+ */
 function displayPlaceDetails(place) {
   // Section des détails de la place
   const placeInfoElement = document.querySelector('.place-info');
@@ -98,6 +112,7 @@ function displayPlaceDetails(place) {
       reviewsSection.appendChild(title);
     }
 
+    // Afficher les revues si disponibles
     if (place.reviews && place.reviews.length > 0) {
       place.reviews.forEach(review => {
         const reviewElement = document.createElement('div');
@@ -110,11 +125,13 @@ function displayPlaceDetails(place) {
         reviewsSection.appendChild(reviewElement);
       });
     } else {
+      // Message si aucune revue n'est disponible
       const noReviewsElement = document.createElement('p');
       noReviewsElement.textContent = 'No reviews yet.';
       reviewsSection.appendChild(noReviewsElement);
     }
 
+    // Ajouter le bouton pour ajouter une revue
     if (addReviewButton) {
       // Mettre à jour le lien avec l'ID de la place
       addReviewButton.href = `add_review.html?id=${place.id}`;

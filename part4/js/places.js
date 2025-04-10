@@ -1,16 +1,39 @@
-// Fonctions liées à l'affichage et gestion des places
+// Fichier: js/places.js
+/**
+ * Fonctions liées à l'affichage et à la gestion des places
+ * Affichage de la liste, filtrage par prix, etc.
+ */
 import { getCookie } from './utils.js';
 import { updateLoginButton } from './auth.js';
 
-// Récupérer la liste des places depuis l'API
+/**
+ * Vérifie l'authentification et initialise l'affichage en conséquence
+ */
+function checkAuthentication() {
+  const token = getCookie('token');
+
+  // Mettre à jour le bouton de connexion
+  updateLoginButton(token);
+
+  // Récupérer les places (avec ou sans token)
+  fetchPlaces(token);
+}
+
+/**
+ * Récupère la liste des places depuis l'API
+ * @param {string|null} token - Token JWT pour l'authentification (optionnel)
+ */
 async function fetchPlaces(token) {
   try {
     const headers = {
       'Content-Type': 'application/json'
     };
+
+    // Ajouter le token d'authentification si disponible
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
+
     const response = await fetch('http://localhost:5000/api/v1/places/', {
       method: 'GET',
       headers: headers
@@ -21,9 +44,13 @@ async function fetchPlaces(token) {
     }
 
     const placesData = await response.json();
+
+    // Stocker les données pour le filtrage ultérieur
     window.allPlaces = placesData;
+
+    // Afficher les places et initialiser le filtre de prix
     displayPlaces(placesData);
-    initializePriceFilter(placesData);
+    initializePriceFilter();
   } catch (error) {
     console.error('Error fetching places:', error);
     const placesListElement = document.getElementById('places-list');
@@ -33,22 +60,28 @@ async function fetchPlaces(token) {
   }
 }
 
-// Afficher la liste des places
+/**
+ * Affiche la liste des places dans l'interface
+ * @param {Array} places - Liste des places à afficher
+ */
 function displayPlaces(places) {
   const placesListElement = document.getElementById('places-list');
   if (!placesListElement) return;
 
+  // Conserver le titre de la section
   const headerElement = placesListElement.querySelector('h2');
   placesListElement.innerHTML = '';
   if (headerElement) {
     placesListElement.appendChild(headerElement);
   }
 
+  // Afficher un message si aucune place n'est disponible
   if (!places || places.length === 0) {
     placesListElement.innerHTML += '<p>No places available at the moment.</p>';
     return;
   }
 
+  // Créer les cartes pour chaque place
   places.forEach((place, index) => {
     // Distribuer les images entre les différentes places (1-4)
     const imageIndex = (index % 4) + 1;
@@ -68,13 +101,16 @@ function displayPlaces(places) {
   });
 }
 
-// Initialiser le filtre de prix
-function initializePriceFilter(places) {
+/**
+ * Initialise le filtre de prix avec les options
+ */
+function initializePriceFilter() {
   const priceFilter = document.getElementById('price-filter');
   if (!priceFilter) return;
 
   priceFilter.innerHTML = '';
 
+  // Options de filtrage de prix
   const options = [
     { value: 'all', text: 'All Prices' },
     { value: '10', text: 'Up to $10' },
@@ -82,6 +118,7 @@ function initializePriceFilter(places) {
     { value: '100', text: 'Up to $100' }
   ];
 
+  // Créer les options du select
   options.forEach(option => {
     const optionElement = document.createElement('option');
     optionElement.value = option.value;
@@ -89,12 +126,16 @@ function initializePriceFilter(places) {
     priceFilter.appendChild(optionElement);
   });
 
+  // Ajouter l'écouteur d'événements pour le filtrage
   priceFilter.addEventListener('change', function () {
     filterPlacesByPrice(this.value);
   });
 }
 
-// Filtrer les places par prix
+/**
+ * Filtre les places par prix maximum
+ * @param {string} maxPrice - Prix maximum ou 'all' pour toutes
+ */
 function filterPlacesByPrice(maxPrice) {
   const places = window.allPlaces;
   if (!places) return;
@@ -109,36 +150,5 @@ function filterPlacesByPrice(maxPrice) {
   displayPlaces(filteredPlaces);
 }
 
-// Vérifier l'authentification sur la page d'accueil
-function checkAuthentication() {
-  const token = getCookie('token');
-  const loginButton = document.querySelector('.login-button');
-
-  if (!loginButton) return;
-
-  if (!token) {
-    // Utilisateur non connecté
-    loginButton.textContent = 'Login';
-    loginButton.href = 'login.html';
-    loginButton.replaceWith(loginButton.cloneNode(true));
-
-    fetchPlaces();
-  } else {
-    // Utilisateur connecté
-    loginButton.textContent = 'Logout';
-    loginButton.href = '#';
-
-    const newLoginButton = loginButton.cloneNode(true);
-    loginButton.parentNode.replaceChild(newLoginButton, loginButton);
-
-    newLoginButton.addEventListener('click', function (e) {
-      e.preventDefault();
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      window.location.href = 'index.html';
-    });
-
-    fetchPlaces(token);
-  }
-}
-
-export { fetchPlaces, displayPlaces, initializePriceFilter, filterPlacesByPrice, checkAuthentication };
+// Exporter toutes les fonctions
+export { checkAuthentication, fetchPlaces, displayPlaces, initializePriceFilter, filterPlacesByPrice };
