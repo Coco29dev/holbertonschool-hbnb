@@ -8,8 +8,9 @@ from app.api.v1.places import api as places_ns
 from app.api.v1.reviews import api as reviews_ns
 from app.api.v1.auth import api as auth_ns
 from app.api.v1.protected import api as protected_ns
-from app.extensions import db, jwt, bcrypt
 from flask_cors import CORS
+import os
+from pathlib import Path
 
 
 def create_app(config_class=DevelopmentConfig):
@@ -20,6 +21,11 @@ def create_app(config_class=DevelopmentConfig):
     bcrypt.init_app(app)
     jwt.init_app(app)
     db.init_app(app)
+
+    # Créer le dossier data s'il n'existe pas
+    data_dir = Path(app.root_path).parent / 'data'
+    if not data_dir.exists():
+        data_dir.mkdir(parents=True)
 
     # Créer les tables de la base de données
     with app.app_context():
