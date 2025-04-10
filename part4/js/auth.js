@@ -5,6 +5,9 @@
  */
 import { getCookie } from './utils.js';
 
+// URL de base de l'API - à modifier selon votre configuration
+const API_BASE_URL = 'http://localhost:5000';
+
 /**
  * Authentifie un utilisateur auprès de l'API
  * @param {string} email - Email de l'utilisateur
@@ -12,7 +15,7 @@ import { getCookie } from './utils.js';
  */
 async function loginUser(email, password) {
   try {
-    const response = await fetch('http://localhost:5000/api/v1/auth/login', {
+    const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -26,7 +29,7 @@ async function loginUser(email, password) {
       window.location.href = 'index.html';
     } else {
       const errorData = await response.json();
-      alert('Login failed: ' + (errorData.message || response.statusText));
+      alert('Login failed: ' + (errorData.error || errorData.message || response.statusText));
     }
   } catch (error) {
     console.error('Login error:', error);
@@ -84,4 +87,4 @@ function initLoginForm() {
   }
 }
 
-export { loginUser, updateLoginButton, initLoginForm };
+export { loginUser, updateLoginButton, initLoginForm, API_BASE_URL };

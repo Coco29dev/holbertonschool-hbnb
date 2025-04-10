@@ -1,10 +1,9 @@
-// Fichier: js/places.js
 /**
  * Fonctions liées à l'affichage et à la gestion des places
  * Affichage de la liste, filtrage par prix, etc.
  */
 import { getCookie } from './utils.js';
-import { updateLoginButton } from './auth.js';
+import { updateLoginButton, API_BASE_URL } from './auth.js';
 
 /**
  * Vérifie l'authentification et initialise l'affichage en conséquence
@@ -34,7 +33,7 @@ async function fetchPlaces(token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch('http://localhost:5000/api/v1/places/', {
+    const response = await fetch(`${API_BASE_URL}/api/v1/places/`, {
       method: 'GET',
       headers: headers
     });

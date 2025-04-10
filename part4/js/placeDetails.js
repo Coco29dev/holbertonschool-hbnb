@@ -2,7 +2,7 @@
  * Fonctions liées à l'affichage des détails d'une place
  */
 import { getCookie, getUrlParams, showError } from './utils.js';
-import { updateLoginButton } from './auth.js';
+import { updateLoginButton, API_BASE_URL } from './auth.js';
 import { setupReviewForm } from './reviews.js';
 
 /**
@@ -54,7 +54,7 @@ async function fetchPlaceDetails(placeId, token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`http://localhost:5000/api/v1/places/${placeId}`, {
+    const response = await fetch(`${API_BASE_URL}/api/v1/places/${placeId}`, {
       method: 'GET',
       headers: headers
     });

@@ -1,3 +1,5 @@
+# Modification de app/__init__.py pour gérer CORS correctement
+
 from flask import Flask
 from flask_restx import Api
 from config import Config
@@ -15,7 +17,10 @@ from pathlib import Path
 
 def create_app(config_class=Config):
     app = Flask(__name__)
-    CORS(app)
+    
+    # Configuration CORS plus permissive pendant le développement
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    
     app.config.from_object(config_class)
     app.config['SECRET_KEY'] = 'your_secret_key'
     bcrypt.init_app(app)

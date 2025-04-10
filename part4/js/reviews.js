@@ -2,7 +2,7 @@
  * Fonctions liées à l'ajout et à l'affichage des revues
  */
 import { getCookie, getUrlParams, showError } from './utils.js';
-import { updateLoginButton } from './auth.js';
+import { updateLoginButton, API_BASE_URL } from './auth.js';
 
 /**
  * Configuration du formulaire d'ajout de revue sur la page des détails
@@ -25,7 +25,7 @@ function setupReviewForm(placeId, token) {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/v1/places/${placeId}/reviews`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/places/${placeId}/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ async function fetchPlaceForReview(placeId, token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`http://localhost:5000/api/v1/places/${placeId}`, {
+    const response = await fetch(`${API_BASE_URL}/api/v1/places/${placeId}`, {
       method: 'GET',
       headers: headers
     });
@@ -141,7 +141,7 @@ function setupAddReviewForm(placeId, token) {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/v1/places/${placeId}/reviews`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/places/${placeId}/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
