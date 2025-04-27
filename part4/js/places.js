@@ -81,9 +81,9 @@ function displayPlaces(places) {
   }
 
   // Créer les cartes pour chaque place
-  places.forEach((place, index) => {
-    // Distribuer les images entre les différentes places (1-4)
-    const imageIndex = (index % 4) + 1;
+  places.forEach((place) => {
+    // Utiliser la même méthode que dans placeDetails.js pour assurer la cohérence
+    const imageIndex = (place.id.charCodeAt(0) % 4) + 1;
 
     const placeElement = document.createElement('div');
     placeElement.className = 'place-card';
